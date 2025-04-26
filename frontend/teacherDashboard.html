@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <h2>Welcome Teacher</h2>
+
+  <button onclick="approveStudents()">Approve Students</button>
+  <button onclick="viewAttendance()">View Attendance</button>
+  <h2>Upload Time Table</h2>
+<form id="uploadTimetableForm" enctype="multipart/form-data">
+    <input type="file" name="timetable" accept="image/*" required>
+    <button type="submit">Upload</button>
+</form>
+
+<script>
+document.getElementById('uploadTimetableForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    const res = await fetch('http://localhost:5000/api/teacher/upload-timetable', {
+        method: 'POST',
+        body: formData
+    });
+
+    const data = await res.json();
+    alert(data.message);
+});
+</script>
+
+  <div id="output"></div>
+
+  <script src="js/main.js"></script>
+  <script>
+    function approveStudents() {
+      document.getElementById('output').innerHTML = 'Approve student list here...';
+    }
+
+    function viewAttendance() {
+      document.getElementById('output').innerHTML = 'Attendance list for class here...';
+    }
+  </script>
+   <!-- Footer Section -->
+   <footer>
+    <p>Copyright &copy; 2025 Pratik, Amrish, Kamlesh All Rights Reserved.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <h2>Welcome Admin</h2>
+
+  <button onclick="manageTeachers()">Manage Teachers</button>
+  <button onclick="manageStudents()">Manage Students</button>
+  <button onclick="manageTimetable()">Manage Timetable</button>
+
+  <div id="output"></div>
+
+  <script src="js/main.js"></script>
+  <script>
+    function manageTeachers() {
+      document.getElementById('output').innerHTML = 'Add/Remove Teacher page...';
+    }
+
+    function manageStudents() {
+      document.getElementById('output').innerHTML = 'Add/Remove Student page...';
+    }
+
+    function manageTimetable() {
+      document.getElementById('output').innerHTML = 'Timetable management here...';
+    }
+  </script>
+   <!-- Footer Section -->
+   <footer>
+    <p>Copyright &copy; 2025 Pratik, Amrish, Kamlesh All Rights Reserved.</p>
+</footer>
+</body>
+</html>

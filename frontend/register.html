@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register - Attendance System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="register-container">
+    <div class="register-box">
+      <h2>Student Registration</h2>
+      <form action="http://localhost:5000/api/auth/register" method="POST" enctype="multipart/form-data">
+        
+        <div class="input-group">
+          <label for="userid">User ID</label>
+          <input type="text" id="userid" name="userid" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="input-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+
+        <div class="input-group">
+          <label for="roll">Roll Number</label>
+          <input type="text" id="roll" name="roll" required>
+        </div>
+
+        <div class="input-group">
+          <label for="course">Course</label>
+          <input type="text" id="course" name="course" required>
+        </div>
+
+        <div class="input-group">
+          <label for="year">Year</label>
+          <input type="text" id="year" name="year" required>
+        </div>
+
+        <div class="input-group">
+          <label for="semester">Semester</label>
+          <input type="text" id="semester" name="semester" required>
+        </div>
+
+        <div class="input-group">
+          <label for="photo">Upload Photo</label>
+          <input type="file" id="photo" name="photo" accept="image/*" required>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn">Register</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>Copyright &copy; 2025 Pratik Raj, Amrish Kumar, Kamlesh Gehlot. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
