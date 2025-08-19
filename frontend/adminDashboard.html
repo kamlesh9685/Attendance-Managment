@@ -3,30 +3,197 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
-  <h2>Welcome Admin</h2>
+  <div class="dashboard-container">
+    <div class="header">
+      <h2>Admin Dashboard</h2>
+      <button onclick="logout()" class="btn btn-logout">Logout</button>
+    </div>
 
-  <button onclick="manageTeachers()">Manage Teachers</button>
-  <button onclick="manageStudents()">Manage Students</button>
-  <button onclick="manageTimetable()">Manage Timetable</button>
+    <div class="dashboard-content">
+      <div class="section">
+        <button onclick="showAddTeacherForm()" class="btn btn-primary">Add New Teacher</button>
+      </div>
 
-  <div id="output"></div>
+      <div class="section">
+        <h3>Teacher List</h3>
+        <div id="teacherList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Teacher Modal -->
+  <div id="addTeacherModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeAddTeacherForm()">&times;</span>
+      <h3>Add New Teacher</h3>
+      <form id="addTeacherForm">
+        <div class="form-group">
+          <label for="userId">User ID</label>
+          <input type="text" id="userId" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required>
+        </div>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+          <label for="department">Department</label>
+          <input type="text" id="department" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Teacher</button>
+      </form>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
   <script>
-    function manageTeachers() {
-      document.getElementById('output').innerHTML = 'Add/Remove Teacher page...';
+    // Check authentication
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
+    if (!token || role !== 'admin') {
+      window.location.href = 'login.html';
     }
 
-    function manageStudents() {
-      document.getElementById('output').innerHTML = 'Add/Remove Student page...';
+    // Modal functions
+    function showAddTeacherForm() {
+      document.getElementById('addTeacherModal').style.display = 'block';
     }
 
-    function manageTimetable() {
-      document.getElementById('output').innerHTML = 'Timetable management here...';
+    function closeAddTeacherForm() {
+      document.getElementById('addTeacherModal').style.display = 'none';
+      document.getElementById('addTeacherForm').reset();
     }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('addTeacherModal');
+      if (event.target == modal) {
+        closeAddTeacherForm();
+      }
+    }
+
+    // Add Teacher Form Handler
+    document.getElementById('addTeacherForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const teacherData = {
+        userId: document.getElementById('userId').value,
+        password: document.getElementById('password').value,
+        name: document.getElementById('name').value,
+        department: document.getElementById('department').value
+      };
+
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/add-teacher', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(teacherData)
+        });
+
+        const data = await res.json();
+        
+        if (res.ok) {
+          alert('Teacher added successfully');
+          closeAddTeacherForm();
+          loadTeachers();
+        } else {
+          alert(data.message || 'Failed to add teacher');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+      }
+    });
+
+    // Load Teachers
+    async function loadTeachers() {
+      const teacherList = document.getElementById('teacherList');
+      teacherList.innerHTML = '<p>Loading teachers...</p>';
+
+      try {
+        const res = await fetch('http://localhost:5000/api/teacher/list', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch teachers');
+        }
+
+        const teachers = await res.json();
+        
+        if (teachers.length === 0) {
+          teacherList.innerHTML = '<p>No teachers found</p>';
+          return;
+        }
+
+        teacherList.innerHTML = `
+          <table class="teacher-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>User ID</th>
+                <th>Department</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${teachers.map(teacher => `
+                <tr>
+                  <td>${teacher.name}</td>
+                  <td>${teacher.userId}</td>
+                  <td>${teacher.department}</td>
+                  <td>
+                    <button onclick="removeTeacher('${teacher.userId}')" class="btn btn-danger">Remove</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (error) {
+        console.error('Error:', error);
+        teacherList.innerHTML = '<p class="error">Failed to load teachers. Please try again.</p>';
+      }
+    }
+
+    // Remove Teacher
+    async function removeTeacher(userId) {
+      if (!confirm('Are you sure you want to remove this teacher?')) return;
+
+      try {
+        const res = await fetch(`http://localhost:5000/api/auth/remove-teacher/${userId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert('Teacher removed successfully');
+          loadTeachers();
+        } else {
+          alert(data.message || 'Failed to remove teacher');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+      }
+    }
+
+    // Load teachers when page loads
+    loadTeachers();
   </script>
    <!-- Footer Section -->
    <footer>

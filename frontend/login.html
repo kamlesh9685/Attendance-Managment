@@ -3,48 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-  <h2>Login</h2>
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Email" required><br><br>
-    <input type="password" id="password" placeholder="Password" required><br><br>
-
-    <select id="role" required>
-      <option value="">Select Role</option>
-      <option value="student">Student</option>
-      <option value="teacher">Teacher</option>
-      <option value="admin">Admin</option>
-    </select><br><br>
-
-    <button type="submit">Login</button>
-  </form>
-
+  <div class="header">
+    <a href="index.html" class="home-btn">🏠 Home</a>
+  </div>
+  <div class="form-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label for="userId">User ID</label>
+      <input type="text" id="userId" name="userId" required>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+      <label for="role">Role</label>
+      <select id="role" name="role" required>
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button type="submit" class="btn">Login</button>
+    </form>
+    <div id="loginMsg"></div>
+    <p style="margin-top:16px;">Don't have an account?
+      <a href="register.html" style="color:#457b9d; text-decoration:underline; font-weight:500;">Register here</a>
+    </p>
+  </div>
+  <footer>
+    <p>Copyright &copy; 2025 Pratik, Amrish, Kamlesh All Rights Reserved.</p>
+  </footer>
   <script src="js/main.js"></script>
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const role = document.getElementById('role').value;
-
-      const res = await fetch(`http://localhost:5000/api/auth/login/${role}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert('Login Successful');
-        if (role === 'student') window.location.href = 'studentDashboard.html';
-        else if (role === 'teacher') window.location.href = 'teacherDashboard.html';
-        else window.location.href = 'adminDashboard.html';
-      } else {
-        alert(data.msg);
-      }
-    });
-  </script>
 </body>
 </html>

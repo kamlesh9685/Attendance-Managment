@@ -8,35 +8,80 @@ if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById('email').value;
+        const userId = document.getElementById('userId').value;
         const password = document.getElementById('password').value;
         const role = document.getElementById('role').value;
+
+        if (!userId || !password || !role) {
+            alert('Please fill in all fields');
+            return;
+        }
 
         try {
             const res = await fetch(`${backendURL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, role })
+                body: JSON.stringify({ userId, password, role })
             });
 
             const data = await res.json();
 
             if (res.ok) {
+                // Store token and user info
                 localStorage.setItem('token', data.token);
-                localStorage.setItem('role', role);
+                localStorage.setItem('role', data.user.role);
+                localStorage.setItem('userId', data.user.userId);
+                localStorage.setItem('userName', data.user.name);
 
                 // Redirect based on role
-                if (role === 'student') window.location.href = 'studentDashboard.html';
-                else if (role === 'teacher') window.location.href = 'teacherDashboard.html';
-                else if (role === 'admin') window.location.href = 'adminDashboard.html';
+                switch(data.user.role) {
+                    case 'admin':
+                        window.location.href = 'adminDashboard.html';
+                        break;
+                    case 'teacher':
+                        window.location.href = 'teacherDashboard.html';
+                        break;
+                    case 'student':
+                        window.location.href = 'studentDashboard.html';
+                        break;
+                    default:
+                        alert('Invalid role');
+                }
             } else {
-                alert(data.msg);
+                alert(data.message || 'Login failed');
             }
         } catch (error) {
-            console.error(error);
-            alert('Something went wrong');
+            console.error('Login error:', error);
+            alert('Something went wrong. Please try again.');
         }
     });
+}
+
+// Check authentication status
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    
+    if (!token) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    
+    return true;
+}
+
+// Logout function
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    window.location.href = 'login.html';
+}
+
+// Add auth check to protected pages
+if (window.location.pathname.includes('Dashboard')) {
+    checkAuth();
 }
 
 // Student Registration API
@@ -69,10 +114,4 @@ if (registerForm) {
             alert('Something went wrong');
         }
     });
-}
-// Logout function
-function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    window.location.href = 'login.html';
 }
